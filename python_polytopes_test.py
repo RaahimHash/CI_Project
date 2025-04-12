@@ -9,14 +9,12 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 #     A = np.array([i, j, k, p])
 #     det = np.linalg.det(A)
     
-#     return det == 0
+#     return det == 0``
 
-# points = np.empty((10, 3))
-
-# for i in range(10):
-#     points[i, 0] = random.uniform(-10, 10)
-#     points[i, 1] = random.uniform(-10, 10)
-#     points[i, 2] = random.uniform(-10, 10)
+# # for comparing the two methods of ordering vertices
+# points = np.array([
+#     [0.0, 0.0, -100.0], [0.0, 0.0, -100.0], [0.0, 0.0, -100.0], [0.0, 0.0, -100.0], [0.0, 0.0, -100.0], [0.0, 0.0, -100.0], [0.0, 0.0, -100.0], [19.0, 7.0, 77.0], [19.0, 7.0, -100.0], [19.0, 7.0, -100.0], [19.0, 7.0, -100.0], [19.0, 7.0, -100.0], [19.0, 7.0, -100.0], [53.0, 37.0, -52.0], [53.0, 37.0, -100.0], [84.0, -14.0, -62.0], [84.0, -14.0, -100.0], [84.0, -14.0, -100.0], [84.0, -14.0, -100.0], [87.0, 4.0, -65.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [87.0, 4.0, -100.0], [-54.0, -81.0, -78.0], [-54.0, -81.0, -100.0], [-54.0, -81.0, -100.0], [-86.0, -99.0, 50.0], [-47.0, 34.0, 63.0], [-47.0, 34.0, -100.0], [-47.0, 34.0, -100.0], [-47.0, 34.0, -100.0], [33.0, 98.0, 84.0], [33.0, 98.0, -100.0], [33.0, 98.0, -100.0], [33.0, 98.0, -100.0], [33.0, 80.0, -61.0], [33.0, 80.0, -100.0], [33.0, 80.0, -100.0], [33.0, 80.0, -100.0], [33.0, 80.0, -100.0], [33.0, 80.0, -100.0], [-62.0, -23.0, 5.0], [-62.0, -23.0, -100.0], [-62.0, -23.0, -100.0], [-62.0, -23.0, -100.0], [-62.0, -23.0, -100.0], [-62.0, -23.0, -100.0], [-38.0, -73.0, -20.0], [-38.0, -73.0, -100.0], [-38.0, -73.0, -100.0], [-38.0, -73.0, -100.0], [-38.0, -73.0, -100.0], [-38.0, -73.0, -100.0], [-38.0, -73.0, -100.0], [-38.0, -73.0, -100.0], [-75.0, -39.0, -18.0], [-75.0, -39.0, -100.0], [-75.0, -39.0, -100.0], [-75.0, -39.0, -100.0], [-75.0, -39.0, -100.0], [-75.0, -39.0, -100.0], [59.0, -64.0, -8.0], [59.0, -64.0, -100.0], [59.0, -64.0, -100.0], [59.0, -64.0, -100.0], [59.0, -64.0, -100.0], [59.0, -64.0, -100.0], [-18.0, -35.0, -54.0], [-18.0, -35.0, -100.0], [-18.0, -35.0, -100.0], [81.0, -17.0, -75.0], [81.0, -17.0, -100.0], [81.0, -17.0, -100.0], [81.0, -17.0, -100.0], [-29.0, -2.0, 6.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-29.0, -2.0, -100.0], [-55.0, -95.0, -58.0], [-55.0, -95.0, -100.0], [-55.0, -95.0, -100.0], [-55.0, -95.0, -100.0], [-13.0, -40.0, -43.0], [-13.0, -40.0, -100.0], [-13.0, -40.0, -100.0]
+#     ])
 
 # a cube
 # points = np.array([[0, 0, 0], 
@@ -28,35 +26,53 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 #                   [1, 1, 0],
 #                   [1, 1, 1]])
 
-# a dodechahedron
-phi = (1 + np.sqrt(5)) / 2
+# # a dodechahedron
+# phi = (1 + np.sqrt(5)) / 2
 
-points = np.array([
+# points = np.array([
 
-    [ 1,  1,  1],
-    [ 1,  1, -1],
-    [ 1, -1,  1],
-    [ 1, -1, -1],
-    [-1,  1,  1],
-    [-1,  1, -1],
-    [-1, -1,  1],
-    [-1, -1, -1],
+#     [ 1,  1,  1],
+#     [ 1,  1, -1],
+#     [ 1, -1,  1],
+#     [ 1, -1, -1],
+#     [-1,  1,  1],
+#     [-1,  1, -1],
+#     [-1, -1,  1],
+#     [-1, -1, -1],
     
-    [0,  1/phi,  phi],
-    [0,  1/phi, -phi],
-    [0, -1/phi,  phi],
-    [0, -1/phi, -phi],
+#     [0,  1/phi,  phi],
+#     [0,  1/phi, -phi],
+#     [0, -1/phi,  phi],
+#     [0, -1/phi, -phi],
     
-    [ 1/phi,  phi, 0],
-    [ 1/phi, -phi, 0],
-    [-1/phi,  phi, 0],
-    [-1/phi, -phi, 0],
+#     [ 1/phi,  phi, 0],
+#     [ 1/phi, -phi, 0],
+#     [-1/phi,  phi, 0],
+#     [-1/phi, -phi, 0],
     
-    [ phi, 0,  1/phi],
-    [ phi, 0, -1/phi],
-    [-phi, 0,  1/phi],
-    [-phi, 0, -1/phi]
-])
+#     [ phi, 0,  1/phi],
+#     [ phi, 0, -1/phi],
+#     [-phi, 0,  1/phi],
+#     [-phi, 0, -1/phi]
+# ])
+
+COUNT = 100
+
+points = np.empty((COUNT, 3))
+
+for i in range(COUNT):
+    # points[i, 0] = random.uniform(-COUNT, COUNT)
+    # points[i, 1] = random.uniform(-COUNT, COUNT)
+    # points[i, 2] = random.uniform(-COUNT, COUNT)
+    
+    if random.uniform(0, 1) < 0.7:
+        points[i, 0] = points[i - 1, 0]  
+        points[i, 1] = points[i - 1, 1] 
+        points[i, 2] = -COUNT
+    else:
+        points[i, 0] = random.uniform(-COUNT, COUNT)
+        points[i, 1] = random.uniform(-COUNT, COUNT)
+        points[i, 2] = random.uniform(-COUNT, COUNT)
 
 hull = ConvexHull(points)
 simplices = hull.simplices
@@ -75,6 +91,7 @@ for i in range(len(simplices)):
     planes[i] = (normal, p1) 
 
 face_groups = {}
+changed = set() # contains all the changed points
 
 for i in range(len(planes)):
     if planes[i] == -1:
@@ -89,37 +106,80 @@ for i in range(len(planes)):
         # print(f"{simplices[i]} and {simplices[j]}")
 
         # if np.dot(normal, point - point2) == 0 and abs(np.dot(normal, normal2)) == 1:
-        if np.isclose(np.dot(normal, point - point2), 0) and np.isclose(abs(np.dot(normal, normal2)), 1):
-            # print(f"Normal 1: {normal}, Point 1: {point}")
-            # print(f"Normal 2: {normal2}, Point 2: {point2}")
+        dot_points = np.dot(normal, point - point2)
+        dot_normals = abs(np.dot(normal, normal2))
+        # print(f"Dot points: {dot_points}, Dot normals: {dot_normals}")
+        if np.isclose(dot_points, 0) and np.isclose(dot_normals, 1):
+            print(f"Normal 1: {normal}, Point 1: {point}")
+            print(f"Normal 2: {normal2}, Point 2: {point2}")
             face_groups[i] = np.union1d(face_groups[i], simplices[j])
             planes[j] = -1
+            changed = changed.union(set(face_groups[i]))
         # print()
 
 print(f"Face groups: {face_groups}")
 
-faces = []
+faces = [] # contains the faces with vertices properly ordered
 
 for i in face_groups:
-    face = []
-    face.append(int(face_groups[i][0]))
-    min_dist = np.inf
-    min_i = -1
+# greedy approach, each vertex has an edge with its closest two neighbors
+    # face = []
+    # face.append(int(face_groups[i][0]))
+    # min_dist = np.inf
+    # min_i = -1
 
-    while len(face) != len(face_groups[i]):
+    # while len(face) != len(face_groups[i]):
         
-        for k in range(len(face_groups[i])):
-            if face_groups[i][k] not in face:
-                dist = np.linalg.norm(points[face[-1]] - points[face_groups[i][k]])
-                if dist < min_dist:
-                    min_dist = dist
-                    min_i = face_groups[i][k]
+    #     for k in range(len(face_groups[i])):
+    #         if face_groups[i][k] not in face:
+    #             dist = np.linalg.norm(points[face[-1]] - points[face_groups[i][k]])
+    #             if dist < min_dist:
+    #                 min_dist = dist
+    #                 min_i = face_groups[i][k]
 
-        face.append(int(min_i))
-        min_dist = np.inf
-        min_i = -1
+    #     face.append(int(min_i))
+    #     min_dist = np.inf
+    #     min_i = -1
     
-    faces.append(face)
+    # faces.append(face)
+
+# centroid approach, each vertex is ordered by angle with respect to the centroid obtained through the mean of the vertices
+    if len(face_groups[i]) == 3:
+        faces.append([int(face_groups[i][0]), int(face_groups[i][1]), int(face_groups[i][2])])
+        continue
+
+    # Get the normal vector for this face
+    normal = planes[i][0]
+    
+    # Calculate centroid
+    centroid_x = np.mean(points[face_groups[i], 0])
+    centroid_y = np.mean(points[face_groups[i], 1])
+    centroid_z = np.mean(points[face_groups[i], 2])
+    centroid = np.array([centroid_x, centroid_y, centroid_z])
+    
+    # Find the major axis of the normal vector
+    major_axis = np.argmax(np.abs(normal))
+    other_axes = [0, 1, 2]
+    other_axes.remove(major_axis)
+    
+    angles_points = []
+    
+    for j in range(len(face_groups[i])):
+        # Get the point
+        point = points[face_groups[i][j]]
+        
+        # Project the point onto the plane defined by the other two axes
+        projected_x = point[other_axes[0]] - centroid[other_axes[0]]
+        projected_y = point[other_axes[1]] - centroid[other_axes[1]]
+        
+        # Calculate the angle in the projected 2D space
+        angle = np.arctan2(projected_y, projected_x)
+        angles_points.append((angle, face_groups[i][j]))
+    
+    # Sort angles_points by angle
+    angles_points.sort(key=lambda x: x[0])
+    
+    faces.append([int(angles_points[j][1]) for j in range(len(angles_points))])
 
 print(f"Faces: {faces}")
 
@@ -129,6 +189,9 @@ ax = fig.add_subplot(111, projection='3d')
 # Plot the points
 ax.scatter(points[:, 0], points[:, 1], points[:, 2], color='r', s=50)
 
+# plot changed points with a different color
+ax.scatter(points[list(changed), 0], points[list(changed), 1], points[list(changed), 2], color='g', s=1000)
+
 # Prepare face polygons
 polygons = []
 for face in faces:
@@ -137,8 +200,10 @@ for face in faces:
     polygons.append(polygon)
 
 # Create the 3D polygons
-poly = Poly3DCollection(polygons, alpha=0.7, linewidth=1, edgecolor='k')
-poly.set_facecolor('cyan')
+colormap = plt.get_cmap('prism', len(faces))
+face_colors = [colormap(i) for i in range(len(faces))]
+poly = Poly3DCollection(polygons, alpha=0.9, linewidth=4, edgecolor='k')
+poly.set_facecolor(face_colors)
 
 # Add the collection to the plot
 ax.add_collection3d(poly)
@@ -154,3 +219,9 @@ ax.set_box_aspect([1, 1, 1])
 plt.title('Convex Hull with Merged Faces')
 plt.tight_layout()
 plt.show()
+
+with open('points.txt', 'w') as f:
+    f.write("points = np.array([\n")
+    for i in range(len(points)):
+        f.write(f"    {points[i].tolist()},\n")
+    f.write("])\n")
