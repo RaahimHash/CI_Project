@@ -88,7 +88,8 @@ for i in range(len(planes)):
 
         # print(f"{simplices[i]} and {simplices[j]}")
 
-        if np.dot(normal, point - point2) == 0 and abs(np.dot(normal, normal2)) == 1:
+        # if np.dot(normal, point - point2) == 0 and abs(np.dot(normal, normal2)) == 1:
+        if np.isclose(np.dot(normal, point - point2), 0) and np.isclose(abs(np.dot(normal, normal2)), 1):
             # print(f"Normal 1: {normal}, Point 1: {point}")
             # print(f"Normal 2: {normal2}, Point 2: {point2}")
             face_groups[i] = np.union1d(face_groups[i], simplices[j])
