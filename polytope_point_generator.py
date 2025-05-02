@@ -13,6 +13,20 @@ def generate_cube():
                     [1, 1, 1]])
     return points
 
+import numpy as np
+
+def generate_penta_pyramid(radius=1.0, height=1.0):
+    # Base: 5 vertices of a regular pentagon in the XY plane
+    angles = np.linspace(0, 2 * np.pi, 6)[:-1]  # 5 points
+    base = np.array([[radius * np.cos(a), radius * np.sin(a), 0] for a in angles])
+
+    # Apex: directly above center of base
+    apex = np.array([[0, 0, height]])
+
+    # Combine vertices
+    points = np.vstack((base, apex))  # Shape: (6, 3)
+    return points
+
 def generate_dodec():
     # a dodechahedron
     phi = (1 + np.sqrt(5)) / 2
