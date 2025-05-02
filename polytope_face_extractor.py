@@ -20,7 +20,7 @@ from polytope_point_generator import *
 
 
 
-def get_conv_hull_faces(points):
+def get_conv_hull_faces(points, verbose=False):
     hull = ConvexHull(points)
     simplices = hull.simplices
 
@@ -57,14 +57,16 @@ def get_conv_hull_faces(points):
             dot_normals = abs(np.dot(normal, normal2))
             # print(f"Dot points: {dot_points}, Dot normals: {dot_normals}")
             if np.isclose(dot_points, 0) and np.isclose(dot_normals, 1):
-                print(f"Normal 1: {normal}, Point 1: {point}")
-                print(f"Normal 2: {normal2}, Point 2: {point2}")
+                if verbose:
+                    print(f"Normal 1: {normal}, Point 1: {point}")
+                    print(f"Normal 2: {normal2}, Point 2: {point2}")
                 face_groups[i] = np.union1d(face_groups[i], simplices[j])
                 planes[j] = -1
                 changed = changed.union(set(face_groups[i]))
             # print()
 
-    print(f"Face groups: {face_groups}")
+    if verbose:
+        print(f"Face groups: {face_groups}")
 
     faces = [] # contains the faces with vertices properly ordered
 
@@ -107,7 +109,8 @@ def get_conv_hull_faces(points):
         
         faces.append([int(angles_points[j][1]) for j in range(len(angles_points))])
 
-    print(f"Faces: {faces}")
+    if verbose:
+        print(f"Faces: {faces}")
     return faces, changed
 
 
