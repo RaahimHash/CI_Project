@@ -130,8 +130,8 @@ def visualize_flat_faces(flat_faces, face_colors=None): # visualise the flattene
 
     
 if __name__ == "__main__":
-    # points = polytope_point_generator.generate_polytope(100)
-    points = polytope_point_generator.generate_turtle(10, 7)
+    points = polytope_point_generator.generate_polytope(1000)
+    # points = polytope_point_generator.generate_turtle(10, 7)
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
 
     G_f = graphs.make_face_graph(faces)
@@ -141,10 +141,11 @@ if __name__ == "__main__":
     visualize_flat_faces(polygons)
 
     G_v =  graphs.make_vertex_graph(faces)
-    T_v = unfolder.steepest_edge_unfolder(G_f, faces, G_v, points) 
+    T_v, cut_edges, c = unfolder.steepest_edge_unfolder(G_f, faces, G_v, points) 
     polygons = flatten_poly(T_v, points)
     visualize_flat_faces(polygons)
 
     # graphs.draw_dual_graph(G_f)
-    polytope_face_extractor.draw_polytope(points, faces, changed)
+    # polytope_face_extractor.draw_polytope(points, faces, changed)
+    polytope_face_extractor.draw_polytope(points, faces, changed, cut_edges, c)
     print(faces)

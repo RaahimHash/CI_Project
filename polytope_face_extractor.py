@@ -116,7 +116,8 @@ def get_conv_hull_faces(points, verbose=False):
     return faces, changed
 
 
-def draw_polytope(points, faces, changed):
+def draw_polytope(points, faces, changed, cut_edges=None, c=None):
+    
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
 
@@ -147,6 +148,27 @@ def draw_polytope(points, faces, changed):
         centroid = polygon.mean(axis=0)
         ax.text(*centroid, str(idx), color='black', fontsize=20, ha='center', va='center')
 
+    # Highlight cut edges if provided
+    if cut_edges is not None:
+        for v1, v2 in cut_edges:    
+            # Draw the cut edge with a distinctive color
+            ax.plot([points[v1][0], points[v2][0]], [points[v1][1], points[v2][1]], [points[v1][2], points[v2][2]], color='yellow', linewidth=8, zorder=10)
+
+    # Visualize the direction vector c if provided
+    if c is not None:
+        # Calculate the centroid of the polytope
+        centroid = np.mean(points, axis=0)
+        
+        # Scale the vector for better visibility
+        scale = np.max(np.abs(points)) * 0.5
+        
+        # Draw the direction vector from centroid
+        ax.quiver(centroid[0], centroid[1], centroid[2], c[0], c[1], c[2], color='blue', linewidth=3, length=scale, normalize=True, arrow_length_ratio=0.15)
+        
+        # Add a text label for the vector
+        end_point = centroid + scale * c/np.linalg.norm(c)
+        ax.text(end_point[0], end_point[1], end_point[2], "c", color='blue', fontsize=15)
+        
     # Set labels and limits
     ax.set_xlabel('X')
     ax.set_ylabel('Y')

@@ -58,7 +58,7 @@ def bfs_unfolder(face_graph, faces, s=0):
 
 def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
     
-    print("Steepest edge unfolding")
+    # print("Steepest edge unfolding") # debugging
 
     T_v = []
 
@@ -83,7 +83,8 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
             if proj > steepest:
                 steepest = proj
                 steepest_v = nei
-        T_v.append((v, steepest_v))
+        if (steepest_v, v) not in T_v:
+            T_v.append((v, steepest_v))
 
     # print("Cut edges:", T_v) # for debugging
 
@@ -118,7 +119,7 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
             frontier.append(child)
             parents[nei] = cur.id
 
-    return T
+    return T, T_v, c
 
 if __name__ == "__main__":
     points = polytope_point_generator.generate_dodec()
