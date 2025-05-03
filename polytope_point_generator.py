@@ -60,22 +60,42 @@ def generate_dodec():
     
     return points
 
-
 def generate_polytope(COUNT):
     # random.seed(44) # if want to retest polygon
     points = np.empty((COUNT, 3))
 
     for i in range(COUNT):
-        # points[i, 0] = random.uniform(-COUNT, COUNT)
-        # points[i, 1] = random.uniform(-COUNT, COUNT)
-        # points[i, 2] = random.uniform(-COUNT, COUNT)
+        # randomly generate points
+        points[i, 0] = random.uniform(-COUNT, COUNT)
+        points[i, 1] = random.uniform(-COUNT, COUNT)
+        points[i, 2] = random.uniform(-COUNT, COUNT)
         
-        if random.uniform(0, 1) < 0.7:
-            points[i, 0] = points[i - 1, 0]  
-            points[i, 1] = points[i - 1, 1] 
-            points[i, 2] = -COUNT
-        else:
-            points[i, 0] = random.uniform(-COUNT, COUNT)
-            points[i, 1] = random.uniform(-COUNT, COUNT)
-            points[i, 2] = random.uniform(-COUNT, COUNT)
+        # randomly generate points, with a 70% chance of a point being on the same line as the previous
+        # if random.uniform(0, 1) < 0.7:
+        #     points[i, 0] = points[i - 1, 0]  
+        #     points[i, 1] = points[i - 1, 1] 
+        #     points[i, 2] = -COUNT
+        # else:
+        #     points[i, 0] = random.uniform(-COUNT, COUNT)
+        #     points[i, 1] = random.uniform(-COUNT, COUNT)
+        #     points[i, 2] = random.uniform(-COUNT, COUNT)
+    return points
+
+def generate_turtle(i, j):
+
+    # if i > j:
+    #     i, j = j, i
+
+    # i = max(1, i)
+    # i = min(7, i)
+    # j = max(1, j)
+    # j = min(7, j)
+
+    points = []
+
+    for x in range(-i, i + 1):
+        for y in range(-j, j + 1):
+            points.append([x, y, -1*(x**2 + y**2)]) # making the z coord negative so the turtle is straight up
+    
+    points = np.array(points)
     return points

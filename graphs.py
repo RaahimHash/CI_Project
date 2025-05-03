@@ -4,6 +4,16 @@ import polytope_face_extractor
 import polytope_point_generator
 from collections import defaultdict, deque
 
+def make_vertex_graph(faces):
+    G = {}
+
+    for face in faces:
+        for v_idx in range(len(face)):
+            G[face[v_idx]] = G.get(face[v_idx], []) + [face[(v_idx + 1) % len(face)]]
+            G[face[(v_idx + 1) % len(face)]] = G.get(face[(v_idx + 1) % len(face)], []) + [face[v_idx]]
+
+    return G   
+
 def make_face_graph(faces):
     G = {i:[] for i in range(len(faces))}
     vertex_faces = defaultdict(set) # initialise as empty set. set because order doesn't matter, just membership does
@@ -45,7 +55,20 @@ def fix_face_orientation(G, faces):
     # print(len(oriented))
     return faces
 
-def draw_dual(G):
+def draw_vertex_graph(G):
+    nxG = nx.Graph()
+    for node in G:
+        nxG.add_node(node)
+        for neighbour in G[node]:
+            if neighbour in nxG:
+                nxG.add_edge(node, neighbour)
+                
+    pos = nx.spring_layout(nxG)
+    nx.draw(nxG, pos, with_labels=True, node_color='skyblue', node_size=1000, font_size=10)
+    plt.title("Vertex Adjacency Graph")
+    plt.show()
+
+def draw_dual_graph(G):
     nxG = nx.Graph()
     for node in G:
         nxG.add_node(node)
@@ -64,4 +87,6 @@ if __name__=="__main__":
     polytope_face_extractor.draw_polytope(points, faces, changed)
     G = make_face_graph(faces)
     faces = fix_face_orientation(G, faces)
-    draw_dual(G)
+    draw_dual_graph(G)
+    G = make_vertex_graph(faces)
+    draw_vertex_graph(G)

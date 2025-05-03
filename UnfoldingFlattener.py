@@ -1,5 +1,5 @@
 import unfolder
-import face_graph
+import graphs
 import polytope_face_extractor
 import polytope_point_generator
 
@@ -25,9 +25,9 @@ def project_face_by_normal(points, face): # project face onto xy-plane
     # Rotation from normal to Z-axis
     z = np.array([0, 0, 1])
     
-    # GPT idea, but apparently dervies from Rodrigues rotation formula
+    # GPT idea, but apparently derives from Rodrigues rotation formula
     if np.allclose(n, z):  # Already aligned
-        rot_matrix = np.eye(3)
+        rot_matrix = np.eye(3) # eye-dentity matrix lmao
     elif np.allclose(n, -z):  # 180-degree rotation
         rot_matrix = R.from_rotvec(np.pi * np.array([1, 0, 0])).as_matrix()
     else:
@@ -85,7 +85,7 @@ def align_to_parent(projected_faces, cur):
             # Rotate around par_v1
             projected_faces[cur.id] = rotate_2d(projected_faces[cur.id], par_v1, angle)
             break  # found shared edge
-                
+
 def flatten_poly(T: unfolder.UnfoldingTree, points):
     root = T.get_root()
     frontier = deque([root])
@@ -130,13 +130,21 @@ def visualize_flat_faces(flat_faces, face_colors=None): # visualise the flattene
 
     
 if __name__ == "__main__":
-    points = polytope_point_generator.generate_polytope(10)
+    # points = polytope_point_generator.generate_polytope(100)
+    points = polytope_point_generator.generate_turtle(10, 7)
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
-    G = face_graph.make_face_graph(faces)
-    faces = face_graph.fix_face_orientation(G, faces)
-    T = unfolder.bfs_unfolder(G, faces)
-    polygons = flatten_poly(T, points)
+
+    G_f = graphs.make_face_graph(faces)
+    faces = graphs.fix_face_orientation(G_f, faces)
+    T_f = unfolder.bfs_unfolder(G_f, faces)
+    polygons = flatten_poly(T_f, points)
     visualize_flat_faces(polygons)
-    # face_graph.draw_dual(G)
+
+    G_v =  graphs.make_vertex_graph(faces)
+    T_v = unfolder.steepest_edge_unfolder(G_f, faces, G_v, points) 
+    polygons = flatten_poly(T_v, points)
+    visualize_flat_faces(polygons)
+
+    # graphs.draw_dual_graph(G_f)
     polytope_face_extractor.draw_polytope(points, faces, changed)
     print(faces)

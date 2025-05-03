@@ -48,6 +48,8 @@ def get_conv_hull_faces(points, verbose=False):
         face_groups[i] = simplices[i]
 
         for j in range(i + 1, len(planes)):
+            if planes[j] == -1:
+                continue
             normal2, point2 = planes[j]
 
             # print(f"{simplices[i]} and {simplices[j]}")
