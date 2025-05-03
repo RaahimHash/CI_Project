@@ -72,9 +72,9 @@ def get_conv_hull_faces(points, verbose=False):
 
     for i in face_groups:
     # centroid approach, each vertex is ordered by angle with respect to the centroid obtained through the mean of the vertices
-        if len(face_groups[i]) == 3:
-            faces.append([int(face_groups[i][0]), int(face_groups[i][1]), int(face_groups[i][2])])
-            continue
+        # if len(face_groups[i]) == 3:
+        #     faces.append([int(face_groups[i][0]), int(face_groups[i][1]), int(face_groups[i][2])])
+        #     continue
 
         # Get the normal vector for this face
         normal = planes[i][0]
@@ -126,7 +126,7 @@ def draw_polytope(points, faces, changed):
 
     # Prepare face polygons
     polygons = []
-    for face in faces:
+    for idx, face in enumerate(faces):
         # Get the coordinates of each vertex in the face
         polygon = [points[i] for i in face]
         polygons.append(polygon)
@@ -134,11 +134,16 @@ def draw_polytope(points, faces, changed):
     # Create the 3D polygons
     colormap = plt.get_cmap('prism', len(faces))
     face_colors = [colormap(i) for i in range(len(faces))]
-    poly = Poly3DCollection(polygons, alpha=0.9, linewidth=4, edgecolor='k')
+    poly = Poly3DCollection(polygons, alpha=0.6, linewidth=4, edgecolor='k')
     poly.set_facecolor(face_colors)
 
     # Add the collection to the plot
     ax.add_collection3d(poly)
+
+    for idx, face in enumerate(faces):
+        polygon = np.array([points[i] for i in face])
+        centroid = polygon.mean(axis=0)
+        ax.text(*centroid, str(idx), color='black', fontsize=20, ha='center', va='center')
 
     # Set labels and limits
     ax.set_xlabel('X')
@@ -160,8 +165,8 @@ def draw_polytope(points, faces, changed):
        
        
 if __name__ == "__main__": 
-    points = generate_cube()
+    # points = generate_cube()
     # points = generate_dodec()
-    # points = generate_polytope(100)
+    points = generate_polytope(100)
     faces, changed = get_conv_hull_faces(points)
     draw_polytope(points, faces, changed)

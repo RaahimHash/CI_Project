@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import polytope_face_extractor
 import polytope_point_generator
-from collections import defaultdict
+from collections import defaultdict, deque
 
 def make_face_graph(faces):
     G = {i:[] for i in range(len(faces))}
@@ -19,6 +19,31 @@ def make_face_graph(faces):
             vertex_faces[vertex].add(face1_idx) # store that i had this vertex -> useful for later faces
             
     return G
+
+def fix_face_orientation(G, faces):
+    oriented = {0}
+    frontier =  deque([0])
+    
+    while len(frontier):
+        cur = frontier.popleft()
+        for nei in G[cur]:
+            if nei in oriented:
+                continue
+            
+            oriented.add(nei)
+            frontier.append(nei)
+            for idx, vertex2 in enumerate(faces[nei]): # vertex1 is before in neighbour so it should be after in cur 
+                vertex1 = faces[nei][idx-1]
+                if (vertex1 in faces[cur] and vertex2 in faces[cur]):
+                    vert1_pos = faces[cur].index(vertex1)
+                    vert2_pos = faces[cur].index(vertex2)
+                    
+                    if vert2_pos == (vert1_pos + 1) % len(faces[cur]): # if vert1 is before vert2 then must flip face
+                        faces[nei] = faces[nei][::-1]
+                        print("flipped")
+    
+    # print(len(oriented))
+    return faces
 
 def draw_dual(G):
     nxG = nx.Graph()
@@ -38,4 +63,5 @@ if __name__=="__main__":
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
     polytope_face_extractor.draw_polytope(points, faces, changed)
     G = make_face_graph(faces)
+    faces = fix_face_orientation(G, faces)
     draw_dual(G)

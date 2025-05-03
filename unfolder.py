@@ -7,10 +7,12 @@ class TreeNode:
     def __init__(self, face_id, face):
         self.id = face_id
         self.face = face
+        self.parent = None
         self.children = []
         
-    def add_child(self, node):
-        self.children.append(node)
+    def add_child(self, other):
+        self.children.append(other)
+        other.parent = self
         
     def __str__(self):
         s = f"== Diving ({self.id}) ==\n"
@@ -44,13 +46,13 @@ def bfs_unfolder(face_graph, faces, s=0):
         for nei in face_graph[cur.id]:
             if nei in visited:
                 continue
-            print(nei)
+            # print(nei) # for debugging
             visited.add(nei)
             child = TreeNode(nei, faces[nei])
             cur.add_child(child)
             frontier.append(child)    
-    print(T)
-    
+            
+    return T
     
     
 if __name__ == "__main__":
@@ -58,5 +60,7 @@ if __name__ == "__main__":
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
     # polytope_face_extractor.draw_polytope(points, faces, changed)
     G = face_graph.make_face_graph(faces)
+    faces = face_graph.fix_face_orientation(G, faces)
     T = bfs_unfolder(G, faces)
+    print(T)
     face_graph.draw_dual(G)
