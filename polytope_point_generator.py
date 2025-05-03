@@ -62,6 +62,7 @@ def generate_dodec():
 
 
 def generate_polytope(COUNT):
+    # random.seed(44) # if want to retest polygon
     points = np.empty((COUNT, 3))
 
     for i in range(COUNT):

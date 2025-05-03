@@ -53,9 +53,14 @@ def align_to_parent(projected_faces, cur):
     par = cur.parent
     for cur_idx1, vertex in enumerate(cur.face):
         if vertex in par.face:
+            if cur_idx1 == 0 and cur.face[-1] in par.face:
+                cur_idx1 = len(cur.face)-1
+                vertex = cur.face[cur_idx1]
+                
             cur_idx2 = (cur_idx1 + 1) % len(cur.face)
             par_idx1 = par.face.index(vertex)
             par_idx2 = (par_idx1 - 1) % len(par.face)
+            print("par, cur", par.face[par_idx2], cur.face[cur_idx2])
             
             # Align first vertex
             diff = projected_faces[par.id][par_idx1] - projected_faces[cur.id][cur_idx1]
@@ -67,13 +72,14 @@ def align_to_parent(projected_faces, cur):
             cur_v1 = projected_faces[cur.id][cur_idx1]
             cur_v2 = projected_faces[cur.id][cur_idx2]
 
-            v1 = par_v2 - par_v1
-            v2 = cur_v2 - cur_v1
+            v1 = par_v1 - par_v2
+            v2 = cur_v1 - cur_v2
 
             v1_norm = v1 / np.linalg.norm(v1)
             v2_norm = v2 / np.linalg.norm(v2)
             dot = np.clip(np.dot(v1_norm, v2_norm), -1.0, 1.0)
             det = np.cross(v2_norm, v1_norm)
+            print(det, dot)
             angle = np.arctan2(det, dot)
 
             # Rotate around par_v1
@@ -131,6 +137,6 @@ if __name__ == "__main__":
     T = unfolder.bfs_unfolder(G, faces)
     polygons = flatten_poly(T, points)
     visualize_flat_faces(polygons)
-    face_graph.draw_dual(G)
+    # face_graph.draw_dual(G)
     polytope_face_extractor.draw_polytope(points, faces, changed)
     print(faces)
