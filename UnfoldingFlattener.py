@@ -5,7 +5,9 @@ import polytope_point_generator
 
 import numpy as np
 import math
+import random
 from collections import deque
+from scipy.spatial import ConvexHull
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
@@ -60,7 +62,7 @@ def align_to_parent(projected_faces, cur):
             cur_idx2 = (cur_idx1 + 1) % len(cur.face)
             par_idx1 = par.face.index(vertex)
             par_idx2 = (par_idx1 - 1) % len(par.face)
-            print("par, cur", par.face[par_idx2], cur.face[cur_idx2])
+            # print("par, cur", par.face[par_idx2], cur.face[cur_idx2])
             
             # Align first vertex
             diff = projected_faces[par.id][par_idx1] - projected_faces[cur.id][cur_idx1]
@@ -79,7 +81,7 @@ def align_to_parent(projected_faces, cur):
             v2_norm = v2 / np.linalg.norm(v2)
             dot = np.clip(np.dot(v1_norm, v2_norm), -1.0, 1.0)
             det = np.cross(v2_norm, v1_norm)
-            print(det, dot)
+            # print(det, dot)
             angle = np.arctan2(det, dot)
 
             # Rotate around par_v1
@@ -102,15 +104,23 @@ def flatten_poly(T: unfolder.UnfoldingTree, points):
             
     return projected_faces
     
-def visualize_flat_faces(flat_faces, face_colors=None): # visualise the flattened faces
+def visualize_flat_faces(flat_faces, collisions=None, face_colors=None): # visualise the flattened faces
     fig, ax = plt.subplots(figsize=(8, 8))
     patches = []
     colors = []
 
+    if collisions:
+        colliding_faces = set()
+        for face1, face2 in collisions:
+            colliding_faces.add(face1)
+            colliding_faces.add(face2)
+
     for face_id, face_pts in flat_faces.items():
         polygon = Polygon(face_pts, closed=True)
         patches.append(polygon)
-        if face_colors:
+        if collisions and face_id in colliding_faces:
+            colors.append('red')
+        elif face_colors:
             colors.append(face_colors.get(face_id, 'lightblue'))
         else:
             colors.append('lightblue')
@@ -128,24 +138,78 @@ def visualize_flat_faces(flat_faces, face_colors=None): # visualise the flattene
     plt.tight_layout()
     plt.show()
 
+def SAT(flat_faces): # no broad phase check, just narrow phase check
+    face_ids = list(flat_faces.keys())
+    colliding_faces = set()
+
+    for i in range(len(face_ids)-1):
+        for j in range(i+1, len(face_ids)):
+            poly1 = flat_faces[face_ids[i]]
+            poly2 = flat_faces[face_ids[j]]
+            colliding = True
+            
+            axes = []
+            for p in range(len(poly1)):
+                p1 = poly1[p]
+                p2 = poly1[(p + 1) % len(poly1)]
+                edge = p2 - p1
+                normal = np.array([-edge[1], edge[0]])
+                axes.append(normal / np.linalg.norm(normal))
+            for p in range(len(poly2)):
+                p1 = poly2[p]
+                p2 = poly2[(p + 1) % len(poly2)]
+                edge = p2 - p1
+                normal = np.array([-edge[1], edge[0]])
+                axes.append(normal / np.linalg.norm(normal))
+
+            for axis in axes:
+                # Copilot 
+                min1, max1 = float('inf'), float('-inf')
+                min2, max2 = float('inf'), float('-inf')
+                for p in poly1:
+                    projection = np.dot(p, axis)
+                    min1 = min(min1, projection)
+                    max1 = max(max1, projection)
+                for p in poly2:
+                    projection = np.dot(p, axis)
+                    min2 = min(min2, projection)
+                    max2 = max(max2, projection)
+                if max1 < min2 or np.isclose(max1, min2) or max2 < min1 or np.isclose(max2, min1):
+                    colliding = False 
+                    break
+
+            if colliding:
+                colliding_faces.add((face_ids[i], face_ids[j]))
+
+    return colliding_faces
     
 if __name__ == "__main__":
-    points = polytope_point_generator.generate_polytope(1000)
-    # points = polytope_point_generator.generate_turtle(10, 7)
+    points = polytope_point_generator.generate_polytope(10000)
+    # points = polytope_point_generator.generate_turtle(random.randint(1, 7), random.randint(1, 7))
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
 
     G_f = graphs.make_face_graph(faces)
     faces = graphs.fix_face_orientation(G_f, faces)
     T_f = unfolder.bfs_unfolder(G_f, faces)
     polygons = flatten_poly(T_f, points)
-    visualize_flat_faces(polygons)
+    count_bfs = len(polygons)
+    collisions = SAT(polygons)
+    print("Number of collisions:", len(collisions))
+    visualize_flat_faces(polygons, collisions)
 
     G_v =  graphs.make_vertex_graph(faces)
     T_v, cut_edges, c = unfolder.steepest_edge_unfolder(G_f, faces, G_v, points) 
     polygons = flatten_poly(T_v, points)
-    visualize_flat_faces(polygons)
+    count_steepest = len(polygons)
+    collisions = SAT(polygons)
+    print("Number of collisions:", len(collisions))
+    visualize_flat_faces(polygons, collisions)
+
+    if count_bfs != count_steepest: 
+        print("BFS and Steepest edge unfoldings have different number of faces")
+        print("BFS:", count_bfs, "Steepest edge:", count_steepest)
 
     # graphs.draw_dual_graph(G_f)
     # polytope_face_extractor.draw_polytope(points, faces, changed)
-    polytope_face_extractor.draw_polytope(points, faces, changed, cut_edges, c)
-    print(faces)
+    polytope_face_extractor.draw_polytope(points, faces, changed, True, cut_edges, c)
+    # print(faces)

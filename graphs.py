@@ -9,8 +9,9 @@ def make_vertex_graph(faces):
 
     for face in faces:
         for v_idx in range(len(face)):
-            G[face[v_idx]] = G.get(face[v_idx], []) + [face[(v_idx + 1) % len(face)]]
-            G[face[(v_idx + 1) % len(face)]] = G.get(face[(v_idx + 1) % len(face)], []) + [face[v_idx]]
+            if (face[v_idx] not in G) or (face[v_idx] in G and face[(v_idx + 1) % len(face)] not in G[face[v_idx]]): 
+                G[face[v_idx]] = G.get(face[v_idx], []) + [face[(v_idx + 1) % len(face)]]
+                G[face[(v_idx + 1) % len(face)]] = G.get(face[(v_idx + 1) % len(face)], []) + [face[v_idx]]
 
     return G   
 
@@ -50,7 +51,7 @@ def fix_face_orientation(G, faces):
                     
                     if vert2_pos == (vert1_pos + 1) % len(faces[cur]): # if vert1 is before vert2 then must flip face
                         faces[nei] = faces[nei][::-1]
-                        print("flipped")
+                        # print("flipped")
     
     # print(len(oriented))
     return faces

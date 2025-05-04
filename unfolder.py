@@ -59,7 +59,6 @@ def bfs_unfolder(face_graph, faces, s=0):
 def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
     
     # print("Steepest edge unfolding") # debugging
-
     T_v = []
 
     # random unit vector
@@ -75,15 +74,21 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
             v_max = idx
 
     for v in vertex_graph: 
-        if v == v_max: # skip the steepest point
-            continue
-        steepest = float("-inf")
-        for nei in vertex_graph[v]:
-            proj = np.dot(c, points[nei] - points[v])/np.linalg.norm(points[nei] - points[v]) 
-            if proj > steepest:
-                steepest = proj
-                steepest_v = nei
-        if (steepest_v, v) not in T_v:
+        if v == v_max: # find the most descending steepest edge from the steepest point, not in the algorithm
+            steepest = float("inf")
+            for nei in vertex_graph[v]:
+                proj = np.dot(c, points[v] - points[nei])/np.linalg.norm(points[v] - points[nei]) 
+                if proj < steepest:
+                    steepest = proj
+                    steepest_v = nei
+            T_v.append((v, steepest_v))
+        else:
+            steepest = float("-inf")
+            for nei in vertex_graph[v]:
+                proj = np.dot(c, points[v] - points[nei])/np.linalg.norm(points[v] - points[nei]) 
+                if proj > steepest:
+                    steepest = proj
+                    steepest_v = nei
             T_v.append((v, steepest_v))
 
     # print("Cut edges:", T_v) # for debugging
@@ -103,11 +108,11 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
             if len(intersection) == 2:
                 v1, v2 = list(intersection)
                 if (v1, v2) in T_v or (v2, v1) in T_v:
-                    print("Faces are joined by a cut edge so not a neighbour")
+                    # print("Faces are joined by a cut edge so not a neighbour")
                     cut = True
-
             if cut:
                 continue
+
             if nei in visited:
                 if nei != parents[cur.id]:
                     print("Cycle detected") # the dual graph is not a tree if you remove the cut edges, which means the steepest edge unfolding failed
