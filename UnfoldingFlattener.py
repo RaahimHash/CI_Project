@@ -184,8 +184,11 @@ def SAT(flat_faces): # no broad phase check, just narrow phase check
     return colliding_faces
     
 if __name__ == "__main__":
-    points = polytope_point_generator.generate_polytope(10000)
+    # points = polytope_point_generator.generate_uniform(10000)
     # points = polytope_point_generator.generate_turtle(random.randint(1, 7), random.randint(1, 7))
+    points = polytope_point_generator.generate_flat(1000)
+    # points = polytope_point_generator.generate_spherical(100)
+    # points = polytope_point_generator.generate_half_spherical(100)
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
 
     G_f = graphs.make_face_graph(faces)
@@ -196,14 +199,17 @@ if __name__ == "__main__":
     collisions = SAT(polygons)
     print("Number of collisions:", len(collisions))
     visualize_flat_faces(polygons, collisions)
-
-    G_v =  graphs.make_vertex_graph(faces)
-    T_v, cut_edges, c = unfolder.steepest_edge_unfolder(G_f, faces, G_v, points) 
-    polygons = flatten_poly(T_v, points)
-    count_steepest = len(polygons)
-    collisions = SAT(polygons)
-    print("Number of collisions:", len(collisions))
-    visualize_flat_faces(polygons, collisions)
+    
+    while True:
+        G_v =  graphs.make_vertex_graph(faces)
+        T_v, cut_edges, c = unfolder.steepest_edge_unfolder(G_f, faces, G_v, points) 
+        polygons = flatten_poly(T_v, points)
+        count_steepest = len(polygons)
+        collisions = SAT(polygons)
+        print("Number of collisions:", len(collisions))
+        visualize_flat_faces(polygons, collisions)
+        if len(collisions) == 0:
+            break
 
     if count_bfs != count_steepest: 
         print("BFS and Steepest edge unfoldings have different number of faces")

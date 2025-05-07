@@ -288,6 +288,6 @@ def draw_polytope(points, faces, changed, only_hull_points=False, cut_edges=None
 if __name__ == "__main__": 
     # points = generate_cube()
     # points = generate_dodec()
-    points = generate_polytope(100)
+    points = generate_uniform(100)
     faces, changed = get_conv_hull_faces(points)
     draw_polytope(points, faces, changed)
