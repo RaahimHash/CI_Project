@@ -4,6 +4,7 @@ import polytope_face_extractor
 import polytope_point_generator
 import numpy as np
 import random
+import heapq
 
 class TreeNode:
     def __init__(self, face_id, face):
@@ -125,6 +126,37 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
             parents[nei] = cur.id
 
     return T, T_v, c
+
+def chromosome_to_unfolding(G_f, faces, edge_idx, edge_priority):
+    print("Chromosome:", edge_priority)
+    # 0th face has highest priority (-1)
+    heap = [(-1, 0, None)] # (priority, node, parent)
+    T = None
+    connected = set()
+    nodes = {}
+    while len(connected) < len(G_f):
+        next_node = heapq.heappop(heap)
+        if next_node[1] in connected: # skip nodes already in spanning tree
+            continue
+        if next_node[2] is None: # root
+            T = UnfoldingTree(0, faces[0])
+            nodes = {0: T.get_root()}
+            connected = {0}
+        else: # add child to spanning tree
+            child = TreeNode(next_node[1], faces[next_node[1]])
+            nodes[next_node[2]].add_child(child)
+            # print(f"added {child.id} under parent: {next_node[2]}")
+            nodes[child.id] = child
+            connected.add(child.id)
+        
+        for nei in G_f[next_node[1]]:
+            if nei in connected:
+                continue
+            a, b = min(next_node[1], nei), max(next_node[1], nei)
+            # print(a, b)
+            heapq.heappush(heap, (edge_priority[edge_idx[(a, b)]], nei, next_node[1])) # get priority from chromosome
+        
+    return T
 
 if __name__ == "__main__":
     points = polytope_point_generator.generate_dodec()
