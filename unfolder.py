@@ -128,7 +128,7 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
     return T, T_v, c
 
 def chromosome_to_unfolding(G_f, faces, edge_idx, edge_priority):
-    print("Chromosome:", edge_priority)
+    # print("Chromosome:", edge_priority)
     # 0th face has highest priority (-1)
     heap = [(-1, 0, None)] # (priority, node, parent)
     T = None
