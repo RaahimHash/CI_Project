@@ -90,7 +90,7 @@ def make_unfolder_crossover():
 def make_unfolder_mutation():
     def mutation_function(candidate):
         # print("mutation", candidate)
-        while random.random() < 0.9:
+        if random.random() < 0.9:
             gene_length = len(candidate)
             idx1 = random.randint(0, gene_length-1)
             idx2 = random.randint(0, gene_length-1)
@@ -98,7 +98,7 @@ def make_unfolder_mutation():
         return candidate
     return mutation_function
         
-def GeneticUnfolder(G_f, faces, points):
+def GeneticUnfolder(G_f, faces, points, verbose=True):
     edge_idx = {} # assign indexes to all edges
     for face1_idx in G_f:
         for face2_idx in G_f[face1_idx]:
@@ -121,8 +121,9 @@ def GeneticUnfolder(G_f, faces, points):
     crossover_function = make_unfolder_crossover()
     mutation_function = make_unfolder_mutation()
     
-    ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=100, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=40, mutation_function=mutation_function, mutation_rate=0.8, generations=10, preselection_func='bin_tour', postselection_func='rbs')
-    ea_pop.evolve(verbose=True)
+    pop_sz = 20
+    ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=pop_sz, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=pop_sz//4, mutation_function=mutation_function, mutation_rate=0.9, generations=2000//pop_sz, preselection_func='rbs', postselection_func='rbs')
+    ea_pop.evolve(verbose=verbose)
     return unfolder.chromosome_to_unfolding(G_f, faces, edge_idx, ea_pop.best_individual)
     
 if __name__=="__main__":
