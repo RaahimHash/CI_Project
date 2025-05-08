@@ -1,6 +1,5 @@
 import numpy as np
 import random
-import math
 
 def generate_cube():
     # a cube
@@ -73,7 +72,7 @@ def generate_uniform(COUNT):
         
     return points
 
-def generate_turtle(i, j):
+def generate_turtle(i, j, COUNT = 1):
 
     # if i > j:
     #     i, j = j, i
@@ -83,11 +82,16 @@ def generate_turtle(i, j):
     # j = max(1, j)
     # j = min(7, j)
 
+    # factor_xy = COUNT/max(i, j)
+    # factor_z = COUNT/(i**2 + j**2)
+    factor_xy = 1 
+    factor_z = 1
+
     points = []
 
     for x in range(-i, i + 1):
         for y in range(-j, j + 1):
-            points.append([x, y, -1*(x**2 + y**2)]) # making the z coord negative so the turtle is straight up
+            points.append([factor_xy*x, factor_xy*y, factor_z*-1*(x**2 + y**2)]) # making the z coord negative so the turtle is straight up
     
     points = np.array(points)
     return points
@@ -122,9 +126,9 @@ def generate_spherical(COUNT):
         phi = random.uniform(0, np.pi)
         theta = random.uniform(0, 2 * np.pi)
 
-        points[i, 0] = np.sin(phi) * np.cos(theta)
-        points[i, 1] = np.sin(phi) * np.sin(theta)
-        points[i, 2] = np.cos(phi) 
+        points[i, 0] = COUNT*(np.sin(phi) * np.cos(theta))
+        points[i, 1] = COUNT*(np.sin(phi) * np.sin(theta))
+        points[i, 2] = COUNT*(np.cos(phi)) 
 
     return points
 
@@ -138,8 +142,28 @@ def generate_half_spherical(COUNT):
         phi = random.uniform(0, np.pi/2)
         theta = random.uniform(0, 2 * np.pi)
 
-        points[i, 0] = np.sin(phi) * np.cos(theta)
-        points[i, 1] = np.sin(phi) * np.sin(theta)
-        points[i, 2] = np.cos(phi) 
+        points[i, 0] = COUNT*(np.sin(phi) * np.cos(theta))
+        points[i, 1] = COUNT*(np.sin(phi) * np.sin(theta))
+        points[i, 2] = COUNT*(np.cos(phi)) 
 
+
+    return points
+
+def generate_bumpy_turtle(i, j, COUNT = 1):
+
+    # if i > j:
+    #     i, j = j, i
+
+    # i = max(1, i)
+    # i = min(7, i)
+    # j = max(1, j)
+    # j = min(7, j)
+
+    points = []
+
+    for x in range(-i, i + 1):
+        for y in range(-j, j + 1):
+            points.append([x, y, -1*(x**2 + y**2) + random.uniform(-10, 0)]) # making the z coord negative so the turtle is straight up
+    
+    points = np.array(points)
     return points

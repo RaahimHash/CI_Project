@@ -19,7 +19,7 @@ class EvolvingPopulation():
     '''
     
     # EA Parameter Setup
-    def __init__(self, population_initialiser, population_size, fitness_function, fitness_converter, crossover_function, num_offspring, mutation_function, mutation_rate, generations, preselection_func, postselection_func, elitism=False):
+    def __init__(self, population_initialiser, population_size, fitness_function, fitness_converter, crossover_function, num_offspring, mutation_function, mutation_rate, generations, preselection_func, postselection_func, elitism=False, recompute=False):
         self.population_size = population_size
         self.population = population_initialiser(self.population_size)
         self.fitness_function = fitness_function
@@ -27,6 +27,7 @@ class EvolvingPopulation():
         self.fitness_converter = fitness_converter
         self.generations = generations
         self.elitism = elitism
+        self.recompute = recompute
         
         self.pre_selection_function = EvolvingPopulation.selection_functions[preselection_func]
         self.post_selection_function = EvolvingPopulation.selection_functions[postselection_func]
@@ -39,7 +40,7 @@ class EvolvingPopulation():
         self.best_individual = None
         self.best_fitness = -999999
         
-        self.best_fitness_history = []
+        self.best_fitness_history = [] # 0 idx is after 1st crossover
         self.mean_fitness_history = []
     
     # Evolution    
@@ -57,12 +58,16 @@ class EvolvingPopulation():
                         child = self.mutation_function(child)
                     children.append(child) # store generated child
             self.population.extend(children) # add children to population
-            self.fitness.extend([self.fitness_function(child) for child in children])
+            if self.recompute: 
+                self.fitness = [self.fitness_function(candidate) for candidate in self.population] 
+            else:
+                self.fitness.extend([self.fitness_function(child) for child in children])
+                
             
             # Contract
             # print("contract")
             # self.fitness = [self.fitness_function(candidate) for candidate in self.population] # re-evaluate fitness
-            if self.elitism:
+            if self.elitism and self.best_individual is not None:  
                 self.population, self.fitness = self.post_selection_function(self.population, self.fitness, selection_sz=self.population_size-1) # survivor selection
                 self.population.append(self.best_individual)
                 self.fitness.append(self.best_fitness)
