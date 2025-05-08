@@ -27,7 +27,6 @@ if __name__ == "__main__":
     #     print(f"Case: {case} - Faces = {len(faces)}")
 
     faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
-    print("Number of faces:", len(faces))
     G_f = graphs.make_face_graph(faces)
     faces = graphs.fix_face_orientation(G_f, faces)
     polytope_face_extractor.draw_polytope(points, faces, changed)

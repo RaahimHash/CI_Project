@@ -82,7 +82,7 @@ class EvolvingPopulation():
                 self.best_individual = self.population[self.fitness.index(self.best_fitness)].copy()
                 # if gen % 10 == 0:
                 try:
-                    self.fitness_function(self.best_individual, save=True, generation=gen)
+                    self.fitness_function(self.best_individual, save=False, generation=gen)
                 except:
                     pass
                     # print("generation failed")
