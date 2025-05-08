@@ -35,7 +35,7 @@ def make_unfolder_fitness_and_converter(G_f, faces, points, edge_idx):
     return fitness_function, fitness_converter
 
 def make_unfolder_crossover():
-    def crossover_function(par1, par2):
+    def two_point_crossover_function(par1, par2):
         gene_length = len(par1) 
         crossover_point1 = random.randint(0, gene_length-1)
         crossover_point2 = (crossover_point1 + random.randint(2, gene_length - 2)) % gene_length # at least 2 genes from each parent
@@ -60,15 +60,24 @@ def make_unfolder_crossover():
             idx = (idx + 1) % gene_length
         # print("child", child1)
         return [child1, child2]
-    return crossover_function
+    
+    # def uniform_crossover_function(par1, par2):
+    #     gene_length = len(par1)
+    #     child1 = []
+    #     child2 = []
+        
+    
+    return two_point_crossover_function
+
 
 def make_unfolder_mutation():
     def mutation_function(candidate):
         # print("mutation", candidate)
-        gene_length = len(candidate)
-        idx1 = random.randint(0, gene_length-1)
-        idx2 = random.randint(0, gene_length-1)
-        candidate[idx1], candidate[idx2] = candidate[idx2], candidate[idx1]
+        while random.random() < 0.9:
+            gene_length = len(candidate)
+            idx1 = random.randint(0, gene_length-1)
+            idx2 = random.randint(0, gene_length-1)
+            candidate[idx1], candidate[idx2] = candidate[idx2], candidate[idx1]
         return candidate
     return mutation_function
         
@@ -95,7 +104,7 @@ def GeneticUnfolder(G_f, faces, points):
     crossover_function = make_unfolder_crossover()
     mutation_function = make_unfolder_mutation()
     
-    ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=40, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=20, mutation_function=mutation_function, mutation_rate=0.8, generations=10, preselection_func='rbs', postselection_func='rbs')
+    ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=100, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=40, mutation_function=mutation_function, mutation_rate=0.8, generations=10, preselection_func='rbs', postselection_func='trunc')
     ea_pop.evolve(verbose=True)
     return unfolder.chromosome_to_unfolding(G_f, faces, edge_idx, ea_pop.best_individual)
     

@@ -7,6 +7,8 @@ import GeneticUnfolder
 import numpy as np
 import math
 import random
+import time
+import os
 from collections import deque
 from scipy.spatial import ConvexHull
 
@@ -18,6 +20,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 def project_face_by_normal(points, face): # project face onto xy-plane
+    # s = time.time()
     # Get three points from the face
     p0, p1, p2 = [points[i] for i in face[:3]]
     v1 = p1 - p0
@@ -43,6 +46,9 @@ def project_face_by_normal(points, face): # project face onto xy-plane
     face_points = np.array([points[i] - p0 for i in face])  # translate to origin
     rotated = face_points @ rot_matrix.T  # apply rotation
     projected = rotated[:, :2]  # drop z
+    # e = time.time()
+    # print(f"Time to project a polygon to 2d: {e - s}")     
+    
     return projected
 
 def rotate_2d(points, center, angle): # for aligning projected polygons
@@ -53,6 +59,7 @@ def rotate_2d(points, center, angle): # for aligning projected polygons
     return (points - center) @ rot_matrix.T + center
 
 def align_to_parent(projected_faces, cur):
+    # s = time.time()
     par = cur.parent
     for cur_idx1, vertex in enumerate(cur.face):
         if vertex in par.face:
@@ -88,8 +95,11 @@ def align_to_parent(projected_faces, cur):
             # Rotate around par_v1
             projected_faces[cur.id] = rotate_2d(projected_faces[cur.id], par_v1, angle)
             break  # found shared edge
-
+    # e = time.time()
+    # print(f"Time to align with parent: {e - s}")     
+    
 def flatten_poly(T: unfolder.UnfoldingTree, points):
+    # s = time.time()
     root = T.get_root()
     frontier = deque([root])
     projected_faces = {}
@@ -102,7 +112,8 @@ def flatten_poly(T: unfolder.UnfoldingTree, points):
             
         for child in cur.children: # need to unfold my children as well
             frontier.append(child)
-            
+    # e = time.time()
+    # print(f"Time to flatten polygons via unfolding: {e - s}") 
     return projected_faces
     
 def visualize_flat_faces(flat_faces, collisions=None, face_colors=None, save=False, generation=0): # visualise the flattened faces
@@ -138,19 +149,26 @@ def visualize_flat_faces(flat_faces, collisions=None, face_colors=None, save=Fal
     ax.axis('off')
     plt.tight_layout()
     if save:
+        os.makedirs("GeneticUnfoldings", exist_ok=True)
         plt.savefig(f"GeneticUnfoldings/{generation:2d}.png")
         plt.close(fig)
     else:
         plt.show()
 
-def SAT(flat_faces): # no broad phase check, just narrow phase check
+def SAT(flat_faces): # broad phase and narrow phase check
+    # s = time.time()
     face_ids = list(flat_faces.keys())
+    face_ids.sort(key = lambda x: min([point[0] for point in flat_faces[x]])) # sort for broad phase
+    
     colliding_faces = set()
-
     for i in range(len(face_ids)-1):
+        max_x = max([point[0] for point in flat_faces[face_ids[i]]])        
         for j in range(i+1, len(face_ids)):
+            if max_x < min([point[0] for point in flat_faces[face_ids[j]]]): # all polygons from here on are too far to right
+                break 
             poly1 = flat_faces[face_ids[i]]
             poly2 = flat_faces[face_ids[j]]
+            
             colliding = True
             
             axes = []
@@ -185,7 +203,8 @@ def SAT(flat_faces): # no broad phase check, just narrow phase check
 
             if colliding:
                 colliding_faces.add((face_ids[i], face_ids[j]))
-
+    # e = time.time()
+    # print(f"Time to check for collisions: {e - s}")     
     return colliding_faces
 
 

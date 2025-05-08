@@ -8,8 +8,8 @@ import unfolder
 import random
 
 if __name__ == "__main__":
-    # points = polytope_point_generator.generate_uniform(10000)
-    points = polytope_point_generator.generate_turtle(random.randint(1, 7), random.randint(1, 7))
+    points = polytope_point_generator.generate_uniform(10000)
+    # points = polytope_point_generator.generate_turtle(random.randint(1, 7), random.randint(1, 7))
     # points = polytope_point_generator.generate_flat(1000)
     # points = polytope_point_generator.generate_spherical(100)
     # points = polytope_point_generator.generate_half_spherical(40)

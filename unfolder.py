@@ -5,6 +5,7 @@ import polytope_point_generator
 import numpy as np
 import random
 import heapq
+import time
 
 class TreeNode:
     def __init__(self, face_id, face):
@@ -128,6 +129,7 @@ def steepest_edge_unfolder(face_graph, faces, vertex_graph, points):
     return T, T_v, c
 
 def chromosome_to_unfolding(G_f, faces, edge_idx, edge_priority):
+    # s = time.time()
     # print("Chromosome:", edge_priority)
     # 0th face has highest priority (-1)
     heap = [(-1, 0, None)] # (priority, node, parent)
@@ -155,7 +157,8 @@ def chromosome_to_unfolding(G_f, faces, edge_idx, edge_priority):
             a, b = min(next_node[1], nei), max(next_node[1], nei)
             # print(a, b)
             heapq.heappush(heap, (edge_priority[edge_idx[(a, b)]], nei, next_node[1])) # get priority from chromosome
-        
+    # e = time.time()
+    # print(f"Time to generate unfolding from chromosome: {e - s}")     
     return T
 
 if __name__ == "__main__":
