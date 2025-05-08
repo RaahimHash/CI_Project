@@ -61,13 +61,30 @@ def make_unfolder_crossover():
         # print("child", child1)
         return [child1, child2]
     
-    # def uniform_crossover_function(par1, par2):
-    #     gene_length = len(par1)
-    #     child1 = []
-    #     child2 = []
+    def uniform_crossover_function(par1, par2):
+        gene_length = len(par1)
+        child1 = []
+        child2 = []
+        for idx in range(gene_length):
+            if random.random() < 0.5:
+                child1.append(par1[idx])
+                child2.append(par2[idx])
+            else:
+                child2.append(par1[idx])
+                child1.append(par2[idx])
+        
+        def fix_candidate(candidate):
+            x = list(zip(candidate, [random.random() for _ in range(len(candidate))], range(len(candidate)))) # random there to shuffle edges with same priorities
+            x.sort() # the priority of each candidate becomes its index
+            y = [(edge[2], pri) for pri, edge in enumerate(x)] # attach priority to each edge
+            y.sort() # sort by the edge ids
+            return [z[1] for z in y] # return priority list 
+            
+        return (fix_candidate(child1), fix_candidate(child2))
         
     
-    return two_point_crossover_function
+    # return two_point_crossover_function
+    return uniform_crossover_function
 
 
 def make_unfolder_mutation():
@@ -90,10 +107,10 @@ def GeneticUnfolder(G_f, faces, points):
                 edge_idx[(a, b)] = len(edge_idx)
     
     # shuffle edge indexes            
-    indexes = list(edge_idx.values())
-    random.shuffle(indexes)
-    for i, edge in enumerate(list(edge_idx.keys())):
-        edge_idx[edge] = indexes[i]
+    # indexes = list(edge_idx.values())
+    # random.shuffle(indexes)
+    # for i, edge in enumerate(list(edge_idx.keys())):
+    #     edge_idx[edge] = indexes[i]
                 
     # edge_priority = list(range(len(edge_idx)))
     # random.shuffle(edge_priority)
@@ -104,7 +121,7 @@ def GeneticUnfolder(G_f, faces, points):
     crossover_function = make_unfolder_crossover()
     mutation_function = make_unfolder_mutation()
     
-    ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=100, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=40, mutation_function=mutation_function, mutation_rate=0.8, generations=10, preselection_func='rbs', postselection_func='trunc')
+    ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=100, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=40, mutation_function=mutation_function, mutation_rate=0.8, generations=10, preselection_func='bin_tour', postselection_func='rbs')
     ea_pop.evolve(verbose=True)
     return unfolder.chromosome_to_unfolding(G_f, faces, edge_idx, ea_pop.best_individual)
     
