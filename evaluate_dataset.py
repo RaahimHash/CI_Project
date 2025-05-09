@@ -1,6 +1,5 @@
 import graphs
 from polytope_point_generator import *
-from generate_dataset import categories
 import polytope_face_extractor
 import GeneticUnfolder
 import UnfoldingFlattener
@@ -34,7 +33,7 @@ for dataset in datasets:
     for p in range(NUM_SHAPES):
         print(f"Processing {dataset} shape {p+1}/{NUM_SHAPES}")
 
-        points = np.loadtxt(f"dataset/{dataset}/{p}.txt")
+        points = np.loadtxt(f"temp_dataset/{dataset}/{p}.txt")
 
         faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
         num_faces[p] = len(faces)
