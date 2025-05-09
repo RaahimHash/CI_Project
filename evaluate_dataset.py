@@ -33,7 +33,8 @@ for dataset in datasets:
     for p in range(NUM_SHAPES):
         print(f"Processing {dataset} shape {p+1}/{NUM_SHAPES}")
 
-        points = np.loadtxt(f"temp_dataset/{dataset}/{p}.txt")
+        points = np.loadtxt(f"CI_Project/dataset/{dataset}/{p}.txt")
+        points = np.loadtxt(f"dataset/{dataset}/{p}.txt")
 
         faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
         num_faces[p] = len(faces)
