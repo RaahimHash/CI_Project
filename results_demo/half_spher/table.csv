@@ -1,0 +1,2 @@
+Category,Avg Faces,% Unfolded (20 Gen),% Unfolded (40 Gen),% Unfolded (60 Gen),% Unfolded (80 Gen),% Unfolded (100 Gen),% Unfolded by BFS,Avg Attempts (Steepest),Avg Time (sec)
+half_spher,196.00,5.0,25.0,55.0,90.0,90.0,60.0,1.05,136.93
