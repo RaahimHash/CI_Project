@@ -1,0 +1,2 @@
+Category,Avg Faces,% Unfolded (20 Gen),% Unfolded (40 Gen),% Unfolded (60 Gen),% Unfolded (80 Gen),% Unfolded (100 Gen),% Unfolded by BFS,Avg Attempts (Steepest),Avg Time (sec)
+unif5k,207.60,0.0,25.0,45.0,65.0,80.0,5.0,1.77,185.88

@@ -174,7 +174,7 @@ def make_polytoper_mutation(percentage, verbose = False):
 
 if __name__ == "__main__":
     
-    pop_size = 100
+    pop_size = 20
     num_points = 1000
     population_initialiser = make_polytoper_initialiser(pop_size, num_points, verbose = False)
     fitness_function, fitness_converter = make_polytoper_fitness_and_converter(verbose = False)

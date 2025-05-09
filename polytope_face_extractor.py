@@ -204,25 +204,105 @@ def get_conv_hull_faces(points, verbose=False):
     return merged_faces, changed
 
 
-def draw_polytope(points, faces, changed, only_hull_points=False, cut_edges=None, c=None):
+# def draw_polytope(points, faces, changed, only_hull_points=False, cut_edges=None, c=None):
+    
+#     fig = plt.figure(figsize=(10, 8))
+#     ax = fig.add_subplot(111, projection='3d')
+
+
+#     if only_hull_points:
+#         hull_vertices = set()
+#         for face in faces:
+#             hull_vertices.update(face)
+#         hull_vertices = list(hull_vertices)
+        
+#         # Plot only points on the hull
+#         ax.scatter(points[hull_vertices, 0], points[hull_vertices, 1], points[hull_vertices, 2], color='r', s=50)
+#     else:
+#         ax.scatter(points[:, 0], points[:, 1], points[:, 2], color='r', s=50)
+
+#     # plot changed points with a different color
+#     ax.scatter(points[list(changed), 0], points[list(changed), 1], points[list(changed), 2], color='g', s=1000)
+
+#     # Prepare face polygons
+#     polygons = []
+#     for idx, face in enumerate(faces):
+#         # Get the coordinates of each vertex in the face
+#         polygon = [points[i] for i in face]
+#         polygons.append(polygon)
+
+#     # Create the 3D polygons
+#     colormap = plt.get_cmap('prism', len(faces))
+#     face_colors = [colormap(i) for i in range(len(faces))]
+#     poly = Poly3DCollection(polygons, alpha=0.6, linewidth=4, edgecolor='k')
+#     poly.set_facecolor(face_colors)
+
+#     # Add the collection to the plot
+#     ax.add_collection3d(poly)
+
+#     for idx, face in enumerate(faces):
+#         polygon = np.array([points[i] for i in face])
+#         centroid = polygon.mean(axis=0)
+#         ax.text(*centroid, str(idx), color='black', fontsize=20, ha='center', va='center')
+
+#     # Highlight cut edges if provided
+#     if cut_edges is not None:
+#         for v1, v2 in cut_edges:    
+#             # Draw the cut edge with a distinctive color
+#             ax.plot([points[v1][0], points[v2][0]], [points[v1][1], points[v2][1]], [points[v1][2], points[v2][2]], color='yellow', linewidth=5, zorder=10)
+
+#     # Visualize the direction vector c if provided
+#     if c is not None:
+#         # Calculate the centroid of the polytope
+#         centroid = np.mean(points, axis=0)
+        
+#         # Scale the vector for better visibility
+#         scale = np.max(np.abs(points)) * 0.5
+        
+#         # Draw the direction vector from centroid
+#         ax.quiver(centroid[0], centroid[1], centroid[2], c[0], c[1], c[2], color='blue', linewidth=3, length=scale, normalize=True, arrow_length_ratio=0.15)
+        
+#         # Add a text label for the vector
+#         end_point = centroid + scale * c/np.linalg.norm(c)
+#         ax.text(end_point[0], end_point[1], end_point[2], "c", color='blue', fontsize=15)
+        
+#     # Set labels and limits
+#     ax.set_xlabel('X')
+#     ax.set_ylabel('Y')
+#     ax.set_zlabel('Z')
+
+#     # Set equal aspect ratio
+#     ax.set_box_aspect([1, 1, 1])
+
+#     plt.title('Convex Hull with Merged Faces')
+#     plt.tight_layout()
+#     plt.show()
+
+#     with open('points.txt', 'w') as f:
+#         f.write("points = np.array([\n")
+#         for i in range(len(points)):
+#             f.write(f"    {points[i].tolist()},\n")
+#         f.write("])\n")
+
+# for report
+def draw_polytope(points, faces, changed=None, only_hull_points=False, cut_edges=None, c=None, face_colors=None):
     
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
 
-
-    if only_hull_points:
-        hull_vertices = set()
-        for face in faces:
-            hull_vertices.update(face)
-        hull_vertices = list(hull_vertices)
-        
-        # Plot only points on the hull
-        ax.scatter(points[hull_vertices, 0], points[hull_vertices, 1], points[hull_vertices, 2], color='r', s=50)
-    else:
-        ax.scatter(points[:, 0], points[:, 1], points[:, 2], color='r', s=50)
-
-    # plot changed points with a different color
-    ax.scatter(points[list(changed), 0], points[list(changed), 1], points[list(changed), 2], color='g', s=1000)
+    # Turn off grid and remove all axes
+    ax.grid(False)
+    ax.set_axis_off()
+    
+    # Make panes transparent
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    ax.zaxis.pane.fill = False
+    
+    # Make pane edges invisible
+    ax.xaxis.pane.set_edgecolor('w')
+    ax.yaxis.pane.set_edgecolor('w')
+    ax.zaxis.pane.set_edgecolor('w')
 
     # Prepare face polygons
     polygons = []
@@ -231,25 +311,20 @@ def draw_polytope(points, faces, changed, only_hull_points=False, cut_edges=None
         polygon = [points[i] for i in face]
         polygons.append(polygon)
 
-    # Create the 3D polygons
-    colormap = plt.get_cmap('prism', len(faces))
-    face_colors = [colormap(i) for i in range(len(faces))]
-    poly = Poly3DCollection(polygons, alpha=0.6, linewidth=4, edgecolor='k')
-    poly.set_facecolor(face_colors)
+    # Create the 3D polygons with consistent cyan color
+    poly = Poly3DCollection(polygons, alpha=0.9, linewidth=0.5, edgecolor='black')
+    poly.set_facecolor('lightblue')  # Use consistent lightblue color for all faces
 
     # Add the collection to the plot
     ax.add_collection3d(poly)
-
+    
+    # Add face indices at centroids
     for idx, face in enumerate(faces):
+        # Calculate centroid of the face
         polygon = np.array([points[i] for i in face])
         centroid = polygon.mean(axis=0)
-        ax.text(*centroid, str(idx), color='black', fontsize=20, ha='center', va='center')
-
-    # Highlight cut edges if provided
-    if cut_edges is not None:
-        for v1, v2 in cut_edges:    
-            # Draw the cut edge with a distinctive color
-            ax.plot([points[v1][0], points[v2][0]], [points[v1][1], points[v2][1]], [points[v1][2], points[v2][2]], color='yellow', linewidth=5, zorder=10)
+        # Add text label
+        ax.text(*centroid, str(idx), color='black', fontsize=14, ha='center', va='center')
 
     # Visualize the direction vector c if provided
     if c is not None:
@@ -260,29 +335,17 @@ def draw_polytope(points, faces, changed, only_hull_points=False, cut_edges=None
         scale = np.max(np.abs(points)) * 0.5
         
         # Draw the direction vector from centroid
-        ax.quiver(centroid[0], centroid[1], centroid[2], c[0], c[1], c[2], color='blue', linewidth=3, length=scale, normalize=True, arrow_length_ratio=0.15)
+        ax.quiver(centroid[0], centroid[1], centroid[2], c[0], c[1], c[2], color='lightblue', linewidth=3, length=scale, normalize=True, arrow_length_ratio=0.15)
         
         # Add a text label for the vector
         end_point = centroid + scale * c/np.linalg.norm(c)
-        ax.text(end_point[0], end_point[1], end_point[2], "c", color='blue', fontsize=15)
-        
-    # Set labels and limits
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+        ax.text(end_point[0], end_point[1], end_point[2], "c", color='lightblue', fontsize=15)
 
     # Set equal aspect ratio
     ax.set_box_aspect([1, 1, 1])
-
-    plt.title('Convex Hull with Merged Faces')
+    
     plt.tight_layout()
     plt.show()
-
-    with open('points.txt', 'w') as f:
-        f.write("points = np.array([\n")
-        for i in range(len(points)):
-            f.write(f"    {points[i].tolist()},\n")
-        f.write("])\n")
        
        
 if __name__ == "__main__": 

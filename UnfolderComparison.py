@@ -9,16 +9,16 @@ import numpy as np
 import random
 
 if __name__ == "__main__":
+    # points = generate_cube()
+    points = generate_dodec()
     # points = generate_uniform(5000)
-    # points = generate_turtle(random.randint(1, 7), random.randint(1, 7), COUNT = 10)
+    # points = generate_turtle(7, 7)
     # points = generate_flat(5000)
     # points = generate_spherical(100)
     # points = generate_half_spherical(100)
     # points = generate_turtle(random.randint(1, 7), random.randint(1, 7))
-    # points = generate_dodec()
     # points = generate_bumpy_turtle(random.randint(1, 7), random.randint(1, 7)) 
-    points = np.loadtxt("best_candidate_points.txt")
-    # points = generate_cube()
+    # points = np.loadtxt("best_candidate_points_2.txt")
 
 
     # all_points = [("Uniform 1", generate_uniform(5000)), ("Uniform 2", generate_uniform(2000)), ("Uniform 3", generate_uniform(500)), ("Flat 1", generate_flat(5000)), ("Flat 2", generate_flat(2000)), ("Turtle", generate_turtle(5, 5)), ("Half-Spherical", generate_half_spherical(50))]
@@ -33,12 +33,12 @@ if __name__ == "__main__":
     graphs.draw_dual_graph(G_f)
         
     # GA Unfolder
-    T_f = GeneticUnfolder.GeneticUnfolder(G_f, faces, points, verbose=True)
-    polygons = UnfoldingFlattener.flatten_poly(T_f, points)
-    count_bfs = len(polygons)
-    collisions = UnfoldingFlattener.SAT(polygons)
-    print("Number of collisions (GA):", len(collisions))
-    UnfoldingFlattener.visualize_flat_faces(polygons, collisions)
+    # T_f = GeneticUnfolder.GeneticUnfolder(G_f, faces, points, verbose=True)
+    # polygons = UnfoldingFlattener.flatten_poly(T_f, points)
+    # count_bfs = len(polygons)
+    # collisions = UnfoldingFlattener.SAT(polygons)
+    # print("Number of collisions (GA):", len(collisions))
+    # UnfoldingFlattener.visualize_flat_faces(polygons, collisions)
     
     # BFS Unfolder
     T_f = unfolder.bfs_unfolder(G_f, faces)
@@ -66,4 +66,4 @@ if __name__ == "__main__":
     # graphs.draw_dual_graph(G_f)
     # polytope_face_extractor.draw_polytope(points, faces, changed)
     # polytope_face_extractor.draw_polytope(points, faces, changed, True, cut_edges, c)
-    print(faces)
+    # print(faces)

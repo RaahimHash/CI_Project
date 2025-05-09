@@ -10,11 +10,7 @@ import csv
 
 NUM_SHAPES = 20
 
-# datasets = ["unif5k"]
-# datasets = ["turt"]
-datasets = ["unif2k", "flat2k"]
-# datasets = ["half_spher", "spher"]
-# datasets[0] = "flat2k"
+datasets = ["unif5k", "unif2k", "flat2k", "turt"]
 
 for dataset in datasets:
     os.makedirs(f"results/{dataset}", exist_ok=True)
@@ -34,7 +30,6 @@ for dataset in datasets:
         print(f"Processing {dataset} shape {p+1}/{NUM_SHAPES}")
 
         points = np.loadtxt(f"CI_Project/dataset/{dataset}/{p}.txt")
-        points = np.loadtxt(f"dataset/{dataset}/{p}.txt")
 
         faces, changed = polytope_face_extractor.get_conv_hull_faces(points)
         num_faces[p] = len(faces)
