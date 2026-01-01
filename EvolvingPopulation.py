@@ -88,11 +88,14 @@ class EvolvingPopulation():
                     # print("generation failed")
             self.best_fitness_history.append(self.fitness_converter(cur_max))
             self.mean_fitness_history.append(self.fitness_converter(sum(self.fitness)/len(self.fitness)))
-            
-                
             if verbose:
                 print(f"Best till Gen {gen}: {self.best_fitness_history[-1]}")
                 print(f"Average current fitness in Gen {gen}: {self.mean_fitness_history[-1]}")
+        
+            if self.fitness_converter(cur_max) == 0:
+                return gen
+                
+        return self.generations + self.fitness_converter(self.best_fitness_history[-1])
                 
     def plot_results(self):
         plt.plot(list(range(self.generations)), self.best_fitness_history, label='Best Fitness')

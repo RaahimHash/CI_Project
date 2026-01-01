@@ -10,8 +10,8 @@ import random
 
 if __name__ == "__main__":
     # points = generate_cube()
-    points = generate_dodec()
-    # points = generate_uniform(5000)
+    # points = generate_dodec()
+    points = generate_uniform(5000)
     # points = generate_turtle(7, 7)
     # points = generate_flat(5000)
     # points = generate_spherical(100)
@@ -33,12 +33,13 @@ if __name__ == "__main__":
     graphs.draw_dual_graph(G_f)
         
     # GA Unfolder
-    # T_f = GeneticUnfolder.GeneticUnfolder(G_f, faces, points, verbose=True)
-    # polygons = UnfoldingFlattener.flatten_poly(T_f, points)
-    # count_bfs = len(polygons)
-    # collisions = UnfoldingFlattener.SAT(polygons)
-    # print("Number of collisions (GA):", len(collisions))
-    # UnfoldingFlattener.visualize_flat_faces(polygons, collisions)
+    T_f, final_fit = GeneticUnfolder.GeneticUnfolder(G_f, faces, points, verbose=True)
+    polygons = UnfoldingFlattener.flatten_poly(T_f, points)
+    count_bfs = len(polygons)
+    collisions = UnfoldingFlattener.SAT(polygons)
+    print("Number of collisions (GA):", len(collisions))
+    print("Final Fitness:", final_fit)
+    UnfoldingFlattener.visualize_flat_faces(polygons, collisions)
     
     # BFS Unfolder
     T_f = unfolder.bfs_unfolder(G_f, faces)

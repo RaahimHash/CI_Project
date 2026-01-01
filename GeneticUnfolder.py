@@ -125,13 +125,13 @@ def GeneticUnfolder(G_f, faces, points, verbose=True, collecting_data=False):
     
     pop_sz = 20
     ea_pop = EvolvingPopulation(population_initialiser=population_initialiser, population_size=pop_sz, fitness_function=fitness_function, fitness_converter=fitness_converter, crossover_function=crossover_function, num_offspring=pop_sz//4, mutation_function=mutation_function, mutation_rate=0.9, generations=2000//pop_sz, preselection_func='rbs', postselection_func='rbs')
-    ea_pop.evolve(verbose=verbose)
+    final_fit = ea_pop.evolve(verbose=verbose)
     end = time.perf_counter()
 
     if collecting_data:
         return unfolder.chromosome_to_unfolding(G_f, faces, edge_idx, ea_pop.best_individual), end - start, ea_pop.best_fitness_history, ea_pop.mean_fitness_history 
     else:
-        return unfolder.chromosome_to_unfolding(G_f, faces, edge_idx, ea_pop.best_individual)    
+        return unfolder.chromosome_to_unfolding(G_f, faces, edge_idx, ea_pop.best_individual), final_fit
 
 if __name__=="__main__":
     points = polytope_point_generator.generate_polytope(100)
